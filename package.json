@@ -2,10 +2,14 @@
   "name": "glob-extension-changer",
   "version": "0.0.1",
   "description": "Convert the extensions of files matched by the glob pattern",
-  "main": "index.mjs",
+  "main": "index.js",
   "repository": "https://github.com/pvcresin/glob-extension-changer.git",
   "author": "pvcresin <pvcresin0730@gmail.com>",
   "license": "MIT",
+  "dependencies": {
+    "commander": "^8.0.0",
+    "glob": "^7.1.7"
+  },
   "devDependencies": {
     "prettier": "^2.3.2"
   }
