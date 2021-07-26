@@ -19,7 +19,7 @@ const options = program.opts();
 // console.log('Options: ', options);
 // console.log('Remaining arguments: ', program.args);
 
-if (program.args.length > 1) {
+if (program.args.length !== 1) {
   console.error('Currently only one glob pattern is supported.');
   process.exit(1);
 }
