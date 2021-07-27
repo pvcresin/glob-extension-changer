@@ -35,11 +35,18 @@ function changeExtension(filePath) {
   return newFilePath;
 }
 
-glob(pattern, {}, function (err, filePaths) {
-  if (err) {
-    console.error(err);
-    process.exit(1);
-  }
-  filePaths.forEach((filePath) => changeExtension(filePath));
-  console.log(`${filePaths.length} files`);
-});
+glob(
+  pattern,
+  {
+    // ignore directory
+    nodir: true,
+  },
+  function (err, filePaths) {
+    if (err) {
+      console.error(err);
+      process.exit(1);
+    }
+    filePaths.forEach((filePath) => changeExtension(filePath));
+    console.log(`${filePaths.length} files`);
+  },
+);
