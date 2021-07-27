@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 
+const fs = require('fs');
 const path = require('path');
 const { name, version } = require('./package.json');
 const { Command } = require('commander');
@@ -31,8 +32,11 @@ function changeExtension(filePath) {
   const oldFilePath = path.join(file.dir, file.base);
   const newFileName = `${file.name}${options.extension}`;
   const newFilePath = path.join(file.dir, newFileName);
-  console.log(`  ${oldFilePath} -> ${newFilePath}`);
-  return newFilePath;
+
+  fs.renameSync(oldFilePath, newFilePath, function (err) {
+    if (err) throw err;
+    console.log(`  ${oldFilePath} -> ${newFilePath}`);
+  });
 }
 
 glob(
