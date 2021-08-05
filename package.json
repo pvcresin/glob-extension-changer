@@ -1,6 +1,6 @@
 {
   "name": "glob-extension-changer",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Convert the extensions of files matched by the glob pattern",
   "main": "index.js",
   "repository": "https://github.com/pvcresin/glob-extension-changer.git",
