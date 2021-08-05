@@ -6,6 +6,9 @@
   "repository": "https://github.com/pvcresin/glob-extension-changer.git",
   "author": "pvcresin <pvcresin0730@gmail.com>",
   "license": "MIT",
+  "engines": {
+    "node": ">= 12"
+  },
   "bin": {
     "glob-extension-changer": "./index.js"
   },
