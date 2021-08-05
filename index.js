@@ -4,7 +4,10 @@ const fs = require('fs');
 const path = require('path');
 const { name, version } = require('./package.json');
 const { Command } = require('commander');
-const glob = require('glob');
+const { sync } = require('glob');
+const { promisify } = require('util');
+
+const rename = promisify(fs.rename);
 
 const program = new Command(name);
 
@@ -27,30 +30,39 @@ if (program.args.length !== 1) {
 
 const pattern = program.args.slice(0, 1).join('');
 
-function changeExtension(filePath) {
-  const file = path.parse(filePath);
-  const oldFilePath = path.join(file.dir, file.base);
-  const newFileName = `${file.name}${options.extension}`;
-  const newFilePath = path.join(file.dir, newFileName);
+const filePaths = sync(pattern, { nodir: true });
 
-  fs.renameSync(oldFilePath, newFilePath, function (err) {
-    if (err) throw err;
-    console.log(`  ${oldFilePath} -> ${newFilePath}`);
-  });
+const extensionInfos = filePaths
+  .map((filePath) => {
+    const file = path.parse(filePath);
+    const oldFilePath = path.join(file.dir, file.base);
+    const newFilePath = path.join(file.dir, `${file.name}${options.extension}`);
+    const isTargetFile = oldFilePath !== newFilePath;
+
+    if (isTargetFile) {
+      console.log(`  ${oldFilePath} -> ${newFilePath}`);
+    }
+    return { oldFilePath, newFilePath, isTargetFile };
+  })
+  .filter(({ isTargetFile }) => isTargetFile);
+
+if (extensionInfos.length === 0) {
+  console.log(`There were no files to be renamed.`);
+  process.exit(0);
 }
 
-glob(
-  pattern,
-  {
-    // ignore directory
-    nodir: true,
-  },
-  function (err, filePaths) {
-    if (err) {
+// check only (= dry run)
+if (options.check) {
+  console.log(`${extensionInfos.length} files will be renamed.`);
+} else {
+  Promise.all(
+    extensionInfos.map(({ oldFilePath, newFilePath }) => rename(oldFilePath, newFilePath)),
+  )
+    .then(() => {
+      console.log(`${extensionInfos.length} files have been renamed.`);
+    })
+    .catch((err) => {
       console.error(err);
       process.exit(1);
-    }
-    filePaths.forEach((filePath) => changeExtension(filePath));
-    console.log(`${filePaths.length} files`);
-  },
-);
+    });
+}
